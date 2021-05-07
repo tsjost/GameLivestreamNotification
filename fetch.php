@@ -45,7 +45,7 @@ function get_twitch_user_data(array $userIDs)
 	$o = [
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HTTPHEADER => [
-			'Authorization: Bearer '. TWITCH_OAUTH_SECRET,
+			'Authorization: Bearer '. TWITCH_TOKEN,
 			'Client-Id: '. TWITCH_CLIENT_ID,
 		],
 	];
@@ -65,7 +65,7 @@ $c = curl_init($url);
 $o = [
 	CURLOPT_RETURNTRANSFER => true,
 	CURLOPT_HTTPHEADER => [
-		'Authorization: Bearer '. TWITCH_OAUTH_SECRET,
+		'Authorization: Bearer '. TWITCH_TOKEN,
 		'Client-Id: '. TWITCH_CLIENT_ID,
 	],
 ];
