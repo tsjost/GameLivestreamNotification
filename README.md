@@ -12,7 +12,7 @@ click `Edit Channel`, go to the `Integrations` tab and click `Create Webhook`:
 ![](https://github.com/tsjost/GameLivestreamNotification/blob/assets/discord01.png)
 4. Click `Copy Webhook URL` and you'll get an URL like  
 `https://discord.com/api/webhooks/12345678987654321/hdKJHuiahwnejdjAKHUIhdkJAHWDiuawhdkJAHDuiawehkjA`  
-Separated by `/` there are 2 important parts: the numeric one is the `Webhook ID`, and the long part at the end is the `Webhook Token`. Copy these into their respective locations in `config.php`
+which you have to stick into into `DISCORD_WEBHOOK_URL` in `config.php`.
 5. Use something like https://dev.twitch.tv/docs/api/reference#get-games to get the Game's ID on Twitch and stick it in `config.php`
 6. Get your [Twitch token & Client ID](https://dev.twitch.tv/docs/authentication#getting-tokens) and stick them in `config.php`
 7. Set `DISCORD_MESSAGE_PREFIX` in `config.php` to whatever you'd like prepended to the notification message.  

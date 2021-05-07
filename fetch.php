@@ -21,7 +21,7 @@ function send_discord_notification($message, $username = null, $avatar = null, $
 		];
 	}
 
-	$c = curl_init('https://discord.com/api/webhooks/'. DISCORD_WEBHOOK_ID .'/'. DISCORD_WEBHOOK_TOKEN . ($messageID ? "/messages/$messageID" : '') .'?wait=true');
+	$c = curl_init(DISCORD_WEBHOOK_URL . ($messageID ? "/messages/$messageID" : '') .'?wait=true');
 	$o = [
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_POSTFIELDS => 'payload_json='. json_encode($data),
