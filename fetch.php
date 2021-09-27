@@ -74,13 +74,14 @@ $ret = curl_exec($c);
 curl_close($c);
 $streams = json_decode($ret);
 
-echo ' --- '. date('Y-m-d H:i:s') ."\n";
+//echo ' --- '. date('Y-m-d H:i:s') ."\n";
 
 if (empty($streams->data)) {
-	echo "No streams :(\n";
+	//	echo "No streams :(\n";
+	die();
 }
 
-$filename = 'streamdata_'. TWITCH_GAME_ID .'.dat';
+$filename = __DIR__ . '/streamdata_'. TWITCH_GAME_ID .'.dat';
 $prev_filedata = [];
 if (file_exists($filename)) {
 	$prev_filedata = explode("\n", trim(file_get_contents($filename)));
@@ -115,9 +116,9 @@ foreach ($streams->data as $stream) {
 	}
 
 	$msgID = $prev_filedata[$id][1] ?? null;
-	echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
+	//echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
 	if ( ! $already_notified or $max_viewers > $prev_viewers) {
-		echo "   notifying!\n";
+		//echo "   notifying!\n";
 		$msgID = send_discord_notification(DISCORD_MESSAGE_PREFIX ."`$username` is $stream_type streaming **$game** for a peak of $max_viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")", $username, $profile_image, $thumbnail, $msgID);
 	}
 
