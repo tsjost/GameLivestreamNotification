@@ -24,7 +24,7 @@ function send_discord_notification($message, $username = null, $avatar = null, $
 	$c = curl_init(DISCORD_WEBHOOK_URL . ($messageID ? "/messages/$messageID" : '') .'?wait=true');
 	$o = [
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_POSTFIELDS => 'payload_json='. json_encode($data),
+		CURLOPT_POSTFIELDS => 'payload_json='. urlencode(json_encode($data)),
 		CURLOPT_CUSTOMREQUEST => $messageID ? 'PATCH' : 'POST',
 	];
 	curl_setopt_array($c, $o);
