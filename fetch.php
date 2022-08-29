@@ -76,6 +76,14 @@ $streams = json_decode($ret);
 
 //echo ' --- '. date('Y-m-d H:i:s') ."\n";
 
+if ( ! $streams) {
+	//echo "ERROR: Unable to parse JSON returned from Twitch.\n";
+	exit(2);
+} else if ( ! empty($streams->error)) {
+	//echo "ERROR: $streams->error ($streams->status) \"$streams->message\"\n";
+	exit(1);
+}
+
 if (empty($streams->data)) {
 	//	echo "No streams :(\n";
 	die();
