@@ -1,6 +1,10 @@
 <?php
 require __DIR__ .'/config.php';
 
+if ( ! defined('ENABLE_OUTPUT')) {
+	define('ENABLE_OUTPUT', false);
+}
+
 function send_discord_notification($message, $username = null, $avatar = null, $preview_image = null, $messageID = null)
 {
 	$data = [
@@ -74,18 +78,18 @@ $ret = curl_exec($c);
 curl_close($c);
 $streams = json_decode($ret);
 
-//echo ' --- '. date('Y-m-d H:i:s') ."\n";
+if (ENABLE_OUTPUT) echo ' --- '. date('Y-m-d H:i:s') ."\n";
 
 if ( ! $streams) {
-	//echo "ERROR: Unable to parse JSON returned from Twitch.\n";
+	if (ENABLE_OUTPUT) echo "ERROR: Unable to parse JSON returned from Twitch.\n";
 	exit(2);
 } else if ( ! empty($streams->error)) {
-	//echo "ERROR: $streams->error ($streams->status) \"$streams->message\"\n";
+	if (ENABLE_OUTPUT) echo "ERROR: $streams->error ($streams->status) \"$streams->message\"\n";
 	exit(1);
 }
 
 if (empty($streams->data)) {
-	//	echo "No streams :(\n";
+	if (ENABLE_OUTPUT) echo "No streams :(\n";
 	die();
 }
 
@@ -124,9 +128,9 @@ foreach ($streams->data as $stream) {
 	}
 
 	$msgID = $prev_filedata[$id][1] ?? null;
-	//echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
+	if (ENABLE_OUTPUT) echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
 	if ( ! $already_notified or $max_viewers > $prev_viewers) {
-		//echo "   notifying!\n";
+		if (ENABLE_OUTPUT) echo "   notifying!\n";
 		$msgID = send_discord_notification(DISCORD_MESSAGE_PREFIX ."`$username` is $stream_type streaming **$game** for a peak of $max_viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")", $username, $profile_image, $thumbnail, $msgID);
 	}
 

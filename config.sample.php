@@ -1,4 +1,7 @@
 <?php
+// Whether to print things to stdout/stderr
+const ENABLE_OUTPUT          = false;
+
 const TWITCH_TOKEN           = 'Twitch Helix Bearer Token';
 const TWITCH_CLIENT_ID       = 'Client ID matching the Token';
 const TWITCH_GAME_ID         = 0;
