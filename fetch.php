@@ -1,6 +1,8 @@
 #!/usr/bin/env php
-<?php
+<?php declare(strict_types=1);
+
 require __DIR__ .'/config.php';
+require __DIR__ .'/utils.php';
 
 if ( ! defined('ENABLE_OUTPUT')) {
 	define('ENABLE_OUTPUT', false);
@@ -62,6 +64,63 @@ function get_twitch_user_data(array $userIDs)
 	$data = array_combine(array_map(fn($x) => $x->id, $data), $data);
 
 	return $data;
+}
+
+function validate_twitch_token(): bool
+{
+	$c = curl_init('https://id.twitch.tv/oauth2/validate');
+	$o = [
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_HTTPHEADER => [
+			'Authorization: Bearer '. TWITCH_TOKEN,
+		]
+	];
+	curl_setopt_array($c, $o);
+	curl_exec($c);
+	$httpcode = curl_getinfo($c, CURLINFO_HTTP_CODE);
+	curl_close($c);
+
+	return 200 == $httpcode;
+}
+
+function refresh_twitch_token()
+{
+	$c = curl_init('https://id.twitch.tv/oauth2/token');
+	$o = [
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_POSTFIELDS => [
+			'client_id' => TWITCH_CLIENT_ID,
+			'client_secret' => TWITCH_CLIENT_SECRET,
+			'grant_type' => 'refresh_token',
+			'refresh_token' => TWITCH_REFRESH_TOKEN,
+		],
+	];
+	curl_setopt_array($c, $o);
+	$ret = curl_exec($c);
+	$httpcode = curl_getinfo($c, CURLINFO_HTTP_CODE);
+	curl_close($c);
+
+	$json = json_decode($ret);
+
+	if (200 == $httpcode) {
+		try {
+			upsert_config_constants([
+				'TWITCH_TOKEN' => $json->access_token,
+				'TWITCH_REFRESH_TOKEN' => $json->refresh_token,
+			]);
+		} catch (\RuntimeException $e) {
+			throw new \RuntimeException("Unable to refresh Twitch token: {$e->getMessage()}");
+		}
+	} else {
+		$message = $json->message ?? '¯\_(ツ)_/¯';
+		throw new \RuntimeException("Unable to refresh Twitch token: $message");
+	}
+}
+
+if ( ! validate_twitch_token()) {
+	refresh_twitch_token();
+	if (ENABLE_OUTPUT) echo "WARNING: Created new Twitch tokens, rerun script to use new tokens.\n";
+	die();
 }
 
 $url = 'https://api.twitch.tv/helix/streams?first=100&game_id='. TWITCH_GAME_ID;
