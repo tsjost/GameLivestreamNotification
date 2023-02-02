@@ -13,7 +13,7 @@ click `Edit Channel`, go to the `Integrations` tab and click `Create Webhook`:
 4. Click `Copy Webhook URL` and you'll get a URL like  
 `https://discord.com/api/webhooks/12345678987654321/hdKJHuiahwnejdjAKHUIhdkJAHWDiuawhdkJAHDuiawehkjA`  
 which you have to stick into into `DISCORD_WEBHOOK_URL` in `config.php`.
-5. Use something like https://dev.twitch.tv/docs/api/reference#get-games to get the Game's ID on Twitch and stick it in `config.php`
+5. Use something like https://dev.twitch.tv/docs/api/reference#get-games to get the Game IDs on Twitch and stick them in `config.php`
 6. Create a [Twitch Application](https://dev.twitch.tv/console/) and retrieve your Client ID and Client Secret; stick them into `config.php`
 7. Set `DISCORD_MESSAGE_PREFIX` in `config.php` to whatever you'd like prepended to the notification message.  
 For example if your [Discord User ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) is 1234567 you can use `<@1234567>` to notify yourself

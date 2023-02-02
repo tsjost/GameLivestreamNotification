@@ -123,7 +123,8 @@ if ( ! validate_twitch_token()) {
 	die();
 }
 
-$url = 'https://api.twitch.tv/helix/streams?first=100&game_id='. TWITCH_GAME_ID;
+$gameIDs_querystring = implode('', array_map(fn($x) => '&game_id=' . $x, TWITCH_GAME_IDS));
+$url = 'https://api.twitch.tv/helix/streams?first=100' . $gameIDs_querystring;
 
 $c = curl_init($url);
 $o = [
@@ -153,49 +154,56 @@ if (empty($streams->data)) {
 	die();
 }
 
-$filename = __DIR__ . '/streamdata_'. TWITCH_GAME_ID .'.dat';
-$prev_filedata = [];
-if (file_exists($filename)) {
-	$prev_filedata = explode("\n", trim(file_get_contents($filename)));
-	$prev_filedata = array_map(fn($x) => explode("\t", $x), $prev_filedata);
-	$prev_filedata = array_column($prev_filedata, 1, 0);
-	$prev_filedata = array_map(fn($x) => explode(' ', $x), $prev_filedata);
-}
-
-$userIDs = array_map(fn($x) => $x->user_id, $streams->data);
-$userdata = get_twitch_user_data($userIDs);
-
-$filedata = '';
+$streams_by_gameID = [];
 foreach ($streams->data as $stream) {
-	$id = $stream->id;
-	$user_id = $stream->user_id;
-	$game = $stream->game_name;
-	$userslug = $stream->user_login;
-	$username = $stream->user_name;
-	$stream_title = $stream->title;
-	$stream_type = $stream->type;
-	$viewers = $stream->viewer_count;
-	$thumbnail = $stream->thumbnail_url;
-
-	$profile_image = $userdata[$user_id]->profile_image_url ?? null;
-
-	$already_notified = isset($prev_filedata[$id]);
-	$max_viewers = $viewers;
-	$prev_viewers = $prev_filedata[$id][0] ?? 0;
-
-	if ($already_notified) {
-		$max_viewers = max($max_viewers, $prev_viewers);
-	}
-
-	$msgID = $prev_filedata[$id][1] ?? null;
-	if (ENABLE_OUTPUT) echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
-	if ( ! $already_notified or $max_viewers > $prev_viewers) {
-		if (ENABLE_OUTPUT) echo "   notifying!\n";
-		$msgID = send_discord_notification(DISCORD_MESSAGE_PREFIX ."`$username` is $stream_type streaming **$game** for a peak of $max_viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")", $username, $profile_image, $thumbnail, $msgID);
-	}
-
-
-	$filedata .= "$id\t$max_viewers $msgID\n";
+	$streams_by_gameID[$stream->game_id][] = $stream;
 }
 
-file_put_contents($filename, $filedata);
+foreach ($streams_by_gameID as $gameID => $streams) {
+	$filename = __DIR__ . '/streamdata_'. $gameID .'.dat';
+	$prev_filedata = [];
+	if (file_exists($filename)) {
+		$prev_filedata = explode("\n", trim(file_get_contents($filename)));
+		$prev_filedata = array_map(fn($x) => explode("\t", $x), $prev_filedata);
+		$prev_filedata = array_column($prev_filedata, 1, 0);
+		$prev_filedata = array_map(fn($x) => explode(' ', $x), $prev_filedata);
+	}
+
+	$userIDs = array_map(fn($x) => $x->user_id, $streams);
+	$userdata = get_twitch_user_data($userIDs);
+
+	$filedata = '';
+	foreach ($streams as $stream) {
+		$id = $stream->id;
+		$user_id = $stream->user_id;
+		$game = $stream->game_name;
+		$userslug = $stream->user_login;
+		$username = $stream->user_name;
+		$stream_title = $stream->title;
+		$stream_type = $stream->type;
+		$viewers = $stream->viewer_count;
+		$thumbnail = $stream->thumbnail_url;
+
+		$profile_image = $userdata[$user_id]->profile_image_url ?? null;
+
+		$already_notified = isset($prev_filedata[$id]);
+		$max_viewers = $viewers;
+		$prev_viewers = $prev_filedata[$id][0] ?? 0;
+
+		if ($already_notified) {
+			$max_viewers = max($max_viewers, $prev_viewers);
+		}
+
+		$msgID = $prev_filedata[$id][1] ?? null;
+		if (ENABLE_OUTPUT) echo "$username is $stream_type streaming **$game** for $viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")\n";
+		if ( ! $already_notified or $max_viewers > $prev_viewers) {
+			if (ENABLE_OUTPUT) echo "   notifying!\n";
+			$msgID = send_discord_notification(DISCORD_MESSAGE_PREFIX ."`$username` is $stream_type streaming **$game** for a peak of $max_viewers viewers! <https://twitch.tv/$userslug> (\"$stream_title\")", $username, $profile_image, $thumbnail, $msgID);
+		}
+
+
+		$filedata .= "$id\t$max_viewers $msgID\n";
+	}
+
+	file_put_contents($filename, $filedata);
+}

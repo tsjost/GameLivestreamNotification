@@ -6,7 +6,7 @@ const DISCORD_WEBHOOK_URL    = 'https://discord.com/api/webhooks/123456789876543
 const DISCORD_MESSAGE_PREFIX = '@everyone ';
 
 const ENABLE_OUTPUT          = false; // Whether to print things to stdout/stderr or be silent (for cron)
-const TWITCH_GAME_ID         = 0;
+const TWITCH_GAME_IDS        = []; // Array of game IDs https://dev.twitch.tv/docs/api/reference/#get-games
 
 // Populate these manually, or automatically by running setup.php
 const TWITCH_TOKEN           = '';
