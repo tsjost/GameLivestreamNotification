@@ -1,0 +1,21 @@
+{
+	"name": "tsjost/gamelivestreamnotification",
+	"description": "Get a notification when somebody starts streaming a specific game on Twitch",
+	"type": "project",
+	"require-dev": {
+		"phpunit/phpunit": "^9.5"
+	},
+	"license": "AGPL-3.0-or-later",
+	"autoload": {
+		"psr-4": {
+			"tsjost\\GameLivestreamNotification\\": "src/"
+		}
+	},
+	"authors": [
+		{
+			"name": "tsjost",
+			"email": "vcs@tsjo.st"
+		}
+	],
+	"require": {}
+}
