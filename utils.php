@@ -19,7 +19,7 @@ function upsert_config_constants(array $keyvalues, string $filename = CONFIG_FIL
 
 	foreach ($keyvalues as $name => $value) {
 		if (str_contains($config, $name)) {
-			$config = preg_replace('/([\n^]const '. $name .'\s*=\s*[\'"])[0-9a-z\s]*([\'"])/', "\\1$value\\2", $config);
+			$config = preg_replace('/([\n^]const '. $name .'\s*=\s*[\'"])[0-9a-z\s]*([\'"])/', "\${1}$value\${2}", $config, -1);
 		} else {
 			$config .= "\nconst $name = '$value';\n";
 		}

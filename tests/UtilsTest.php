@@ -15,6 +15,7 @@ final class UtilsTest extends TestCase
 			'HELLO'       => 'this is a greeting',
 			'HELLO_THERE' => 'say hello you must',
 			'FOO_BAR_BAZ' => 'lorem ipsum dolor sit amet',
+			'NUMBERS'     => "123 can't allow numbers to break things",
 		], TESTCONFIG_FILE);
 
 		$expected = <<<EOF
@@ -22,6 +23,8 @@ final class UtilsTest extends TestCase
 
 const HELLO			= 'this is a greeting';
 const HELLO_THERE='say hello you must';
+
+const NUMBERS   =  '123 can't allow numbers to break things';
 
 const FOO_BAR_BAZ      =     "lorem ipsum dolor sit amet";
 EOF;
@@ -35,6 +38,8 @@ EOF;
 
 const HELLO			= '';
 const HELLO_THERE='general kenobi';
+
+const NUMBERS   =  'hello';
 
 const FOO_BAR_BAZ      =     "stuff goes in here";
 EOF);
